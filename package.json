@@ -1,0 +1,25 @@
+{
+  "name": "mirante-mock-server",
+  "version": "1.0.0",
+  "description": "Backend mockado do MVP Mirante (@mocks-server/main) — rotas de autenticação com delay configurável via env",
+  "main": "index.js",
+  "scripts": {
+    "mocks": "mocks-server",
+    "start": "mocks-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EduardoSouzaDF/Mirant-mockServer.git"
+  },
+  "keywords": [
+    "mock",
+    "mocks-server",
+    "api",
+    "mirante"
+  ],
+  "author": "Mirante",
+  "license": "ISC",
+  "devDependencies": {
+    "@mocks-server/main": "^3.12.0"
+  }
+}
