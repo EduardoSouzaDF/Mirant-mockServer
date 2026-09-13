@@ -4,7 +4,7 @@ const {
   paginacaoValida,
   buscarLotes,
   buscarLotePorId,
-  atualizarSituacao,
+  atualizarSituacaoEmMassa,
   excluirLote,
 } = require("../../src/lotes");
 
@@ -12,6 +12,13 @@ function numeroOuUndefined(valor) {
   if (valor === undefined || valor === "") return undefined;
   const numero = Number(valor);
   return Number.isFinite(numero) ? numero : NaN;
+}
+
+// Corpo esperado pelas ações em massa: { ids: number[] } — uma chamada só,
+// aplicada a todos os lotes selecionados (ou a todos do filtro, quando o
+// escopo escolhido no frontend for "todos").
+function idsValidos(ids) {
+  return Array.isArray(ids) && ids.length > 0 && ids.every((id) => Number.isInteger(id));
 }
 
 module.exports = [
@@ -132,11 +139,12 @@ module.exports = [
   },
 
   // ----------------------------------------------------------
-  // POST /api/lotes/:id/confirmar — muda situação para Confirmado
+  // POST /api/lotes/confirmar — muda situação p/ Confirmado em massa
+  // Corpo: { ids: number[] } — uma chamada só para todos os selecionados.
   // ----------------------------------------------------------
   {
     id: "post-lote-confirmar",
-    url: "/api/lotes/:id/confirmar",
+    url: "/api/lotes/confirmar",
     method: "POST",
     variants: [
       {
@@ -144,12 +152,12 @@ module.exports = [
         type: "middleware",
         options: {
           middleware: (req, res) => {
-            const id = Number(req.params.id);
-            const lote = atualizarSituacao(id, "Confirmado");
-            if (!lote) {
-              return res.status(404).json({ message: "Lote não encontrado" });
+            const { ids } = req.body || {};
+            if (!idsValidos(ids)) {
+              return res.status(400).json({ message: "Informe ids (array não vazio de inteiros)" });
             }
-            return res.status(200).json(lote);
+            const atualizados = atualizarSituacaoEmMassa(ids, "Confirmado");
+            return res.status(200).json({ lotes: atualizados });
           },
         },
       },
@@ -157,11 +165,12 @@ module.exports = [
   },
 
   // ----------------------------------------------------------
-  // POST /api/lotes/:id/enviar — muda situação para Enviado
+  // POST /api/lotes/enviar — muda situação p/ Enviado em massa
+  // Corpo: { ids: number[] } — uma chamada só para todos os selecionados.
   // ----------------------------------------------------------
   {
     id: "post-lote-enviar",
-    url: "/api/lotes/:id/enviar",
+    url: "/api/lotes/enviar",
     method: "POST",
     variants: [
       {
@@ -169,12 +178,12 @@ module.exports = [
         type: "middleware",
         options: {
           middleware: (req, res) => {
-            const id = Number(req.params.id);
-            const lote = atualizarSituacao(id, "Enviado");
-            if (!lote) {
-              return res.status(404).json({ message: "Lote não encontrado" });
+            const { ids } = req.body || {};
+            if (!idsValidos(ids)) {
+              return res.status(400).json({ message: "Informe ids (array não vazio de inteiros)" });
             }
-            return res.status(200).json(lote);
+            const atualizados = atualizarSituacaoEmMassa(ids, "Enviado");
+            return res.status(200).json({ lotes: atualizados });
           },
         },
       },
@@ -233,15 +242,27 @@ module.exports = [
       },
     ],
   },
+  // ----------------------------------------------------------
+  // POST /api/lotes/justificativa — placeholder em massa (uma chamada)
+  // Corpo: { ids: number[] } — sem lógica de negócio real (spec futura).
+  // ----------------------------------------------------------
   {
     id: "post-lote-justificativa",
-    url: "/api/lotes/:id/justificativa",
+    url: "/api/lotes/justificativa",
     method: "POST",
     variants: [
       {
         id: "sucesso",
-        type: "json",
-        options: { status: 200, body: { message: "OK (placeholder)" } },
+        type: "middleware",
+        options: {
+          middleware: (req, res) => {
+            const { ids } = req.body || {};
+            if (!idsValidos(ids)) {
+              return res.status(400).json({ message: "Informe ids (array não vazio de inteiros)" });
+            }
+            return res.status(200).json({ message: "OK (placeholder)", ids });
+          },
+        },
       },
     ],
   },
