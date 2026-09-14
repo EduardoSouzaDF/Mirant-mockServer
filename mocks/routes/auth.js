@@ -1,4 +1,5 @@
 const { buscarPorEmail, semSenha } = require("../../src/usuarios");
+const { decodificarPayload } = require("../../src/auth-token");
 
 // ============================================================
 // Token fake — payload codificado em base64url + assinatura fake
@@ -22,19 +23,6 @@ function gerarToken(usuario) {
   };
   const assinatura = codificarBase64url({ sig: "assinatura-fake-do-mock" });
   return `${codificarBase64url(header)}.${codificarBase64url(payload)}.${assinatura}`;
-}
-
-// Decodifica o payload do token (sem validar assinatura — é mock).
-function decodificarPayload(token) {
-  const partes = token.split(".");
-  if (partes.length !== 3) {
-    return null;
-  }
-  try {
-    return JSON.parse(Buffer.from(partes[1], "base64url").toString("utf8"));
-  } catch (erro) {
-    return null;
-  }
 }
 
 module.exports = [
