@@ -17,6 +17,8 @@ module.exports = [
       "post-lote-incluir:sucesso",
       "post-lote-alterar:sucesso",
       "post-lote-justificativa:sucesso",
+      "get-contas-correntes:sucesso",
+      "post-lancamentos:sucesso",
     ],
   },
   {
