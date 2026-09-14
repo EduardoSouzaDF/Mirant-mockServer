@@ -34,9 +34,19 @@ function primeiraContaDaInstituicao(instituicaoId) {
   return contasCorrentes.find((c) => c.instituicaoId === instituicaoId);
 }
 
+function listarContasPorInstituicao(instituicaoId) {
+  return contasCorrentes.filter((c) => c.instituicaoId === instituicaoId);
+}
+
+function listarContasCorrentes() {
+  return contasCorrentes;
+}
+
 module.exports = {
   contasCorrentes,
   buscarContaCorrentePorNumero,
   buscarContaCorrentePorId,
   primeiraContaDaInstituicao,
+  listarContasCorrentes,
+  listarContasPorInstituicao,
 };

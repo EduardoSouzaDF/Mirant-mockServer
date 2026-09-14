@@ -2,7 +2,7 @@
 // Entidades e fixtures em memória do mock de "Outros Créditos/Débitos".
 // ============================================================
 
-const { primeiraContaDaInstituicao } = require("./contas-correntes");
+const { primeiraContaDaInstituicao, listarContasPorInstituicao } = require("./contas-correntes");
 const { criarLancamentoSeed, reservarProximoId } = require("./lancamentos");
 const {
   instituicoes,
@@ -197,7 +197,13 @@ function paraApi(lote) {
   return {
     id: lote.id,
     resp: resp ? { id: resp.id, nome: resp.nome } : null,
-    instituicao: instituicao ? { id: instituicao.id, nome: instituicao.nome } : null,
+    instituicao: instituicao
+      ? {
+          id: instituicao.id,
+          nome: instituicao.nome,
+          contasCorrentes: listarContasPorInstituicao(instituicao.id),
+        }
+      : null,
     usuarioRegistro: usuarioRegistro ? { id: usuarioRegistro.id, nome: usuarioRegistro.nome } : null,
     usuarioAprovacao: usuarioAprovacao ? { id: usuarioAprovacao.id, nome: usuarioAprovacao.nome } : null,
     situacao: lote.situacao,
