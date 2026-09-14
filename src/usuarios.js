@@ -3,9 +3,13 @@
 // O usuário padrão é admin@mirante.com.br / 123456.
 // ============================================================
 
+// Prefixo "auth-" de propósito: não colide com os ids "u-NNN" da lista de
+// usuários interna do lote (src/lotes.js) — são listas diferentes, e um
+// lote criado via inclusão de lançamento (spec 0005) usa o usuário
+// autenticado real como usuarioRegistro, não um dos placeholders.
 const usuarios = [
   {
-    id: "u-001",
+    id: "auth-001",
     nome: "Administrador",
     email: "admin@mirante.com.br",
     senha: "123456",

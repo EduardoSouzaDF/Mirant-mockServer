@@ -1,6 +1,7 @@
 const { buscarContaCorrentePorId } = require("../../src/contas-correntes");
 const { historicoValido, criarLancamento } = require("../../src/lancamentos");
 const { criarLoteComLancamento } = require("../../src/lotes");
+const { usuarioAutenticadoDoRequest } = require("../../src/auth-token");
 
 module.exports = [
   // ----------------------------------------------------------
@@ -42,7 +43,14 @@ module.exports = [
               documentos,
               descricao,
             });
-            const lote = criarLoteComLancamento(lancamento, conta.instituicaoId);
+            // usuarioRegistro do lote é o usuário autenticado no token
+            // (não um placeholder do seed).
+            const usuarioAutenticado = usuarioAutenticadoDoRequest(req);
+            const lote = criarLoteComLancamento(
+              lancamento,
+              conta.instituicaoId,
+              usuarioAutenticado ? usuarioAutenticado.id : null,
+            );
             return res.status(201).json(lote);
           },
         },

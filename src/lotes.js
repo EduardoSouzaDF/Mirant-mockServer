@@ -9,6 +9,7 @@ const {
   instituicoesResponsaveis,
   buscarInstituicaoPorId,
 } = require("./instituicoes");
+const { usuarios: usuariosAutenticaveis } = require("./usuarios");
 
 const SITUACOES = ["Aberto", "Confirmado", "Enviado"];
 
@@ -159,8 +160,12 @@ reservarProximoId(
   }, 0) + 1,
 );
 
+// Checa a lista interna (placeholders do seed) e a de usuários
+// autenticáveis (quem loga de verdade) — usuarioRegistro de um lote
+// criado via inclusão de lançamento aponta pra essa segunda lista.
 function buscarUsuarioPorId(id) {
-  return id ? usuarios.find((u) => u.id === id) : undefined;
+  if (!id) return undefined;
+  return usuarios.find((u) => u.id === id) || usuariosAutenticaveis.find((u) => u.id === id);
 }
 
 function listarFiltrosOpcoes() {
@@ -290,13 +295,13 @@ function excluirLote(id) {
  * corrente informada, com o lançamento (já criado, situação Pendente)
  * dentro dele. Usado por POST /api/lancamentos (spec 0005).
  */
-function criarLoteComLancamento(lancamento, instituicaoId) {
+function criarLoteComLancamento(lancamento, instituicaoId, usuarioRegistroId) {
   const agora = new Date();
   const lote = {
     id: proximoIdLote++,
     instituicaoRespId: instituicaoId,
     instituicaoId,
-    usuarioRegistroId: null,
+    usuarioRegistroId: usuarioRegistroId || null,
     usuarioAprovacaoId: null,
     situacao: "Aberto",
     dataEntrada: agora.toISOString().slice(0, 10),
